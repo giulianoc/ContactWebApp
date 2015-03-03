@@ -43,6 +43,7 @@
             <version>${jsr349.version}</version>
         </dependency>
 
+        <!-- Jackson JSON processor to support data in JSON format -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-lgpl</artifactId>
