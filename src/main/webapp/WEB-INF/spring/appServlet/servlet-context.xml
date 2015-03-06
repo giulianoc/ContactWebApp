@@ -14,19 +14,27 @@
         http://www.springframework.org/schema/security
         http://www.springframework.org/schema/security/spring-security.xsd">
 
+    <!-- Support for annotation configuration, including annotation for validation
+        using 'validator' as validator -->
     <annotation-driven validator="validator"/>
 
     <security:global-method-security pre-post-annotations="enabled"/>
 
+    <!-- Definition of the static resources: CSS, javascripts, images, ...
+        / means: /src/mail/webapp
+    -->
     <resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/**"/>
 
     <default-servlet-handler/>
 
+    <!-- bean to resolve/identify the view to be used -->
     <beans:bean class="org.springframework.web.servlet.view.UrlBasedViewResolver"
                 id="tilesViewResolver">
+        <!-- setting the 'viewClass' property, Spring MVC will support the tiles -->
         <beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
     </beans:bean>
 
+    <!-- bean providing the layout configuration required by tiles -->
     <beans:bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer" id="tilesConfigurer">
         <beans:property name="definitions">
             <beans:list>
@@ -36,30 +44,40 @@
         </beans:property>
     </beans:bean>
 
+    <!-- this is to automatically detect all the annotations -->
     <context:component-scan base-package="com.contact" />
 
     <interceptors>
+        <!-- theme: intercept every request for changing the theme (default parameter: "theme") -->
         <beans:bean class="org.springframework.web.servlet.theme.ThemeChangeInterceptor"/>
+        <!-- i18n: check the presence of the 'lang' parameter -->
         <beans:bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"
                     p:paramName="lang"/>
     </interceptors>
 
+    <!-- i18n: implement the MessageSource interface which load the files from the defined files -->
     <beans:bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
                 id="messageSource" p:basenames="WEB-INF/i18n/messages,WEB-INF/i18n/application"
                 p:fallbackToSystemLocale="false"/>
 
+    <!-- i18n: use a cookie to save the i18n setting -->
     <beans:bean class="org.springframework.web.servlet.i18n.CookieLocaleResolver"
                 id="localeResolver" p:cookieName="locale"/>
 
+    <!-- theme: implement the ThemeSource interface which load the ResourceBundle of the active theme -->
     <beans:bean class="org.springframework.ui.context.support.ResourceBundleThemeSource" id="themeSource"/>
 
+    <!-- theme: use a cookie to save the theme setting -->
     <beans:bean class="org.springframework.web.servlet.theme.CookieThemeResolver"
-                id="themeResolver" p:cookieName="theme" p:defaultThemeName="standard"/>
+        id="themeResolver" p:cookieName="theme" p:defaultThemeName="standard"/>
 
+    <!-- Validator bean using same messageSource used for the View -->
     <beans:bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
         <beans:property name="validationMessageSource" ref="messageSource"/>
     </beans:bean>
 
+    <!-- StandardServletMultipartResolver is a MultipartResolver implementation,
+        which use the Apache commons upload library to handle the file upload in a form -->
     <beans:bean
             class="org.springframework.web.multipart.support.StandardServletMultipartResolver"
             id="multipartResolver"/>
